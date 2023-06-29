@@ -11,13 +11,6 @@ pipeline {
     }
     
     stages {
-        stage('Checkout') {
-            steps {
-                // Checkout code from the repository
-                git branch: '*/main', credentialsId: 'github', url: 'git@github.com:nikolozjakhua/cicd-pipeline.git'
-            }
-        }
-        
         stage('Build') {
             steps {
                 // Install dependencies
