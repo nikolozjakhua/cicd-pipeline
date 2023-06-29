@@ -48,8 +48,8 @@ pipeline {
                     ).trim()
 
                     if (containerNames) {
-                        sh "docker stop ${containerNames}"
-                        sh "docker rm ${containerNames}"
+                        sh "docker stop \$($containerNames)"
+                        sh "docker rm \$($containerNames)"
                     } else {
                         echo "No containers with the name 'node' found."
                     }
