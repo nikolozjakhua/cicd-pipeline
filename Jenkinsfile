@@ -27,8 +27,6 @@ pipeline {
         
         stage('Build Docker Images') {
             steps {
-                // check Dockerfile
-                sh 'hadoling Dockerfile'
                 // Build Docker images
                 script {
                     if (env.BRANCH_NAME == 'main') {
