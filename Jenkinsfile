@@ -47,7 +47,7 @@ pipeline {
         stage('Push Docker image') {
             steps {
                 script {
-                withCredentials([usernamePassword(credentialsId: 'docker-creds', passwordVariable: 'PASS', usernameVariable: "USER")]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-cred', passwordVariable: 'PASS', usernameVariable: "USER")]) {
                     sh "echo $PASS | docker login -u $USER --password-stdin"
                     if (env.BRANCH_NAME == 'main') {
                         sh "docker tag ${DOCKER_IMAGE_MAIN} nikolozjakhua/cicd:main.v1"
