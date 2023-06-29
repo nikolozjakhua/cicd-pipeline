@@ -10,14 +10,7 @@ pipeline {
         nodejs 'Nodejs'
     }
     
-    stages {
-        stage('Checkout') {
-            steps {
-                // Checkout code from the repository
-                git branch: '*/main', credentialsId: 'github', url: 'git@github.com:nikolozjakhua/cicd-pipeline.git'
-            }
-        }
-        
+    stages {        
         stage('Build') {
             steps {
                 // Install dependencies
