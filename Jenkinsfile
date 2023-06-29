@@ -10,7 +10,7 @@ pipeline {
         nodejs 'Nodejs'
     }
     
-    stages {        
+    stages {
         stage('Build') {
             steps {
                 // Install dependencies
@@ -40,13 +40,14 @@ pipeline {
                 sh 'docker rm $(docker ps -aq) || true'
                 
                 // Run containers based on branch
-                if (env.BRANCH_NAME == 'main') {
-                    sh 'docker run -d --expose 3000 -p 3000:3000 ${DOCKER_IMAGE_MAIN}'
-                } else if (env.BRANCH_NAME == 'dev') {
-                    sh 'docker run -d --expose 3001 -p 3001:3000 ${DOCKER_IMAGE_DEV}'
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        sh 'docker run -d --expose 3000 -p 3000:3000 ${DOCKER_IMAGE_MAIN}'
+                    } else if (env.BRANCH_NAME == 'dev') {
+                        sh 'docker run -d --expose 3001 -p 3001:3000 ${DOCKER_IMAGE_DEV}'
+                    }
                 }
             }
         }
     }
 }
-
