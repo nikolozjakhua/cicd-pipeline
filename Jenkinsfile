@@ -42,9 +42,10 @@ pipeline {
             steps {
                 // Stop and remove previously running containers
                 script {
-                    def dockerStopResult = sh(script: 'docker stop $(docker ps -a --format "{{.Names}}" --filter "name=node*")', returnStdout: true)
-                    if (dockerStopResult.returnCode == 0) {
-                        sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=node*")'
+                    try {
+                        sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=node*") -f'
+                    } catch (Exception e) {
+                        sh 'echo No previously deployed containers'
                     }
                 }
                 // Run containers based on branch
