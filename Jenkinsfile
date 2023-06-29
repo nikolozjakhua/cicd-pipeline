@@ -43,7 +43,7 @@ pipeline {
                 // Stop and remove previously running containers
                 script {
                     try {
-                        def containerNames = sh(returnStdout: true, script: 'docker ps -a --format "{{.Names}}" --filter "name=node*"').trim()
+                        def containerNames = sh(returnStdout: true, script: 'docker ps -a --format "{{.Names}}" | grep node').trim()
                         if (containerNames.isEmpty()) {
                             echo 'No previously deployed containers'
                         } 
