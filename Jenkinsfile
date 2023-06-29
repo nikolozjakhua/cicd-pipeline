@@ -47,14 +47,14 @@ pipeline {
         stage('Push Docker image') {
             steps {
                 script {
-                withDockerRegistry(credentialsId: 'docker-cred', url: 
-                'https://hub.docker.com/repository/docker/nikolozjakhua/cicd') {
+                withDockerRegistry(credentialsId: 'docker-cred', url:'https://hub.docker.com/repository/docker/nikolozjakhua/cicd') {
                     if (env.BRANCH_NAME == 'main') {
                         sh "docker tag ${DOCKER_IMAGE_MAIN} nikolozjakhua/cicd:main.v1"
                         sh "docker push nikolozjakhua/cicd:main.v1"                    
                     } else if (env.BRANCH_NAME == 'dev') {
                         sh "docker tag ${DOCKER_IMAGE_DEV} nikolozjakhua/cicd:dev.v1"
                         sh "docker push nikolozjakhua/cicd:dev.v1"
+                        }
                     }
                 }
             }
@@ -91,5 +91,4 @@ pipeline {
             }
         }
     }
-}
 }
