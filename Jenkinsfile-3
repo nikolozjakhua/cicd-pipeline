@@ -17,7 +17,7 @@ pipeline {
 
         stage('pull docker image') {
             steps {
-                sh "docker pull ${registry}:main.v1"
+                sh "docker pull ${registry}:dev.v1"
                 sh "docker run -d --expose 3000 -p 3000:3000 ${registry}:main.v1"
             }
         }
