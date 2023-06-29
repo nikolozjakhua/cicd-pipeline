@@ -41,6 +41,7 @@ pipeline {
         stage('Cleanup and Deploy') {
             steps {
                 // Stop and remove previously running containers
+                script {
                     try {
                         sh 'docker stop $(docker ps -aq --filter "name=node*" --format="{{.Names}}")'
                     } catch (Exception e) {
@@ -51,7 +52,8 @@ pipeline {
                         sh 'docker rm $(docker ps -aq --filter "name=node*" --format="{{.Names}}")'
                     } catch (Exception e) {
                         echo "No containers to remove: ${e.message}"
-                    }                
+                    }      
+                }          
                 // Run containers based on branch
                 script {
                     if (env.BRANCH_NAME == 'main') {
