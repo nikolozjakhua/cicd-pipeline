@@ -39,15 +39,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Scan Docker image for Vulnerabilities') {
-          steps {
-            script {
-              def vulnerabilities = sh(script: "trivy image --exit-code 0 --severity HIGH,MEDIUM,LOW --no-progress ${registry}:${env.BUILD_ID}", returnStdout: true).trim()
-              echo "Vulnerability Report:\n${vulnerabilities}"
-            }
-          }
-        }
         
         stage('Cleanup and Deploy') {
             steps {
