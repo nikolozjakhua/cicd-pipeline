@@ -42,16 +42,11 @@ pipeline {
             steps {
                 // Stop and remove previously running containers
                 script {
-                    def containerNames = sh(
-                        script: 'docker ps -aq --filter "name=node*" --format="{{.Names}}"',
-                        returnStdout: true
-                    ).trim()
-
-                    if (containerNames) {
-                        sh "docker stop \$($containerNames)"
-                        sh "docker rm \$($containerNames)"
-                    } else {
-                        echo "No containers with the name 'node' found."
+                    try {
+                        sh 'docker stop $(docker ps -a --format {{.Names}} --filter "name=node*") || true'
+                        sh 'docker rm $(docker ps -a --format {{.Names}} --filter "name=node*") || true'
+                    } catch (Exception e) {
+                        sh 'echo "no previosly deployed containers"'
                     }
                 }
                 // Run containers based on branch
