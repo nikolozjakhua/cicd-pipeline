@@ -46,7 +46,7 @@ pipeline {
                     if (containerNames.isEmpty()) {
                         echo 'No previously deployed containers'
                     } else {
-                        sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=node*"')'
+                        sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=node*")'
                     }
                 }
                 // Run containers based on branch
