@@ -41,9 +41,8 @@ pipeline {
         stage('Cleanup and Deploy') {
             steps {
                 // Stop and remove previously running containers
-                sh 'docker stop $(docker ps -a --format "{{.Names}}" | grep node) || true 2>/dev/null'
-                sh 'docker rm $(docker ps -aq --format "{{.Names}}" | grep node) || true 2>/dev/null'
-                
+                    sh 'docker stop $(docker ps -aq --filter "name=node*" --format="{{.Names}}") || true'
+                    sh 'docker rm $(docker ps -aq --filter "name=node*" --format="{{.Names}}") || true'                
                 // Run containers based on branch
                 script {
                     if (env.BRANCH_NAME == 'main') {
