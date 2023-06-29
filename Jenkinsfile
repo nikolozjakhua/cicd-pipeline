@@ -42,19 +42,19 @@ pipeline {
             steps {
                 // Stop and remove previously running containers
                 script {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        sh 'docker stop $(docker ps -aq --filter "name=node*" --format="{{.Names}}")'
-                    } 
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        sh 'docker rm $(docker ps -aq --filter "name=node*" --format="{{.Names}}")'
+                    def containerNames = sh(returnStdout: true, script: 'docker ps -a --format "{{.Names}}" --filter "name=node*"').trim()
+                    if (containerNames.isEmpty()) {
+                        echo 'No previously deployed containers'
+                    } else {
+                        sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=node*") -f'
                     }
-                }          
+                }
                 // Run containers based on branch
                 script {
                     if (env.BRANCH_NAME == 'main') {
-                        sh 'docker run -d --expose 3000 -p 3000:3000 --name nodemain${env.BUILD_NUMBER} ${DOCKER_IMAGE_MAIN}'
+                        sh "docker run -d --expose 3000 -p 3000:3000 --name nodemain${env.BUILD_NUMBER} ${DOCKER_IMAGE_MAIN}"
                     } else if (env.BRANCH_NAME == 'dev') {
-                        sh 'docker run -d --expose 3001 -p 3001:3000 --name nodedev${env.BUILD_NUMBER} ${DOCKER_IMAGE_DEV}'
+                        sh "docker run -d --expose 3001 -p 3001:3000 --name nodedev${env.BUILD_NUMBER} ${DOCKER_IMAGE_DEV}"
                     }
                 }
             }
