@@ -36,15 +36,15 @@ pipeline {
         stage('Cleanup and Deploy') {
             steps {
                 // Stop and remove previously running containers
-                sh 'docker stop $(docker ps -q) || true'
-                sh 'docker rm $(docker ps -aq) || true'
+                sh 'docker stop $(docker ps -a --format "{{.Names}}" | grep node) || true'
+                sh 'docker rm $(docker ps -aq --format "{{.Names}}" | grep node) || true'
                 
                 // Run containers based on branch
                 script {
                     if (env.BRANCH_NAME == 'main') {
-                        sh 'docker run -d --expose 3000 -p 3000:3000 ${DOCKER_IMAGE_MAIN}'
+                        sh 'docker run -d --expose 3000 -p 3000:3000 --name nodemain${env.BUILD_NUMBER} ${DOCKER_IMAGE_MAIN}'
                     } else if (env.BRANCH_NAME == 'dev') {
-                        sh 'docker run -d --expose 3001 -p 3001:3000 ${DOCKER_IMAGE_DEV}'
+                        sh 'docker run -d --expose 3001 -p 3001:3000 --name nodedev${env.BUILD_NUMBER} ${DOCKER_IMAGE_DEV}'
                     }
                 }
             }
