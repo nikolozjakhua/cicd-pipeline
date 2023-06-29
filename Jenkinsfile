@@ -43,9 +43,14 @@ pipeline {
                 // Stop and remove previously running containers
                 script {
                     try {
-                        sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=node*") -f'
+                        def containerNames = sh(returnStdout: true, script: 'docker ps -a --format "{{.Names}}" --filter "name=node*"').trim()
+                        if (!containerNames.isEmpty()) {
+                            sh "docker rm -f ${containerNames}"
+                        } else {
+                            echo 'No previously deployed containers'
+                        }
                     } catch (Exception e) {
-                        sh 'echo No previously deployed containers'
+                    echo 'Error occurred while cleaning up containers'
                     }
                 }
                 // Run containers based on branch
