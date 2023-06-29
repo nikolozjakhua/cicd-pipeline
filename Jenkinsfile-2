@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         BRANCH_NAME = "${params.BRANCH_NAME}"
-        DOCKER_IMAGE_TAG = "node${params.BRANCH_NAME}${params.IMAGE_TAG}"
+        DOCKER_IMAGE_TAG = "node${params.BRANCH_NAME}:${params.IMAGE_TAG}"
     }
     
     stages {
