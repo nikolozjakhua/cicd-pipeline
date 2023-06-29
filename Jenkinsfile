@@ -7,7 +7,7 @@ pipeline {
     }
     
     tools {
-        nodejs 'nodejs-global'
+        nodejs 'Nodejs'
     }
     
     stages {
