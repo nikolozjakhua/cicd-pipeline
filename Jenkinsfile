@@ -42,13 +42,18 @@ pipeline {
             steps {
                 // Stop and remove previously running containers
                 script {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        sh 'docker stop $(docker ps -aq --filter "name=node*" --format="{{.Names}}")'
-                    } 
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        sh 'docker rm $(docker ps -aq --filter "name=node*" --format="{{.Names}}")'
+                    def containerNames = sh(
+                        script: 'docker ps -aq --filter "name=node*" --format="{{.Names}}"',
+                        returnStdout: true
+                    ).trim()
+
+                    if (containerNames) {
+                        sh "docker stop ${containerNames}"
+                        sh "docker rm ${containerNames}"
+                    } else {
+                        echo "No containers with the name 'node' found."
                     }
-                }          
+                }
                 // Run containers based on branch
                 script {
                     if (env.BRANCH_NAME == 'main') {
