@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(
+            choices: ['main', 'dev'],
+            description: 'Specify the target environment',
+            name: 'targetENVIRONMENT'
+        )
+        string(
+            defaultValue: 'latest',
+            description: 'Specify the tag of the Docker image to be deployed',
+            name: 'IMAGE_TAG'
+        )
+    }
+    environment {
+        BRANCH_NAME = "${params.targetENVIRONMENT}"
+        DOCKER_IMAGE_TAG = "node${BRANCH_NAME}${params.IMAGE_TAG}"
+    }
+    
+    stages {
+        stage('Cleanup and Deploy') {
+            steps {
+                // Stop and remove previously running containers
+                script {
+                    def containerNames = sh(returnStdout: true, script: 'docker ps -a --format "{{.Names}}" --filter "name=node*"').trim()
+                    if (containerNames.isEmpty()) {
+                        echo 'No previously deployed containers'
+                    } else {
+                        if (env.BRANCH_NAME == 'main') {
+                            sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=nodemain*") -f'
+                        } else if (env.BRANCH_NAME == 'dev') {
+                            sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=nodedev*") -f'
+                        }
+                    }
+                }
+                // Run containers based on branch
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        sh "docker run -d --expose 3000 -p 3000:3000 --name nodemain${env.BUILD_NUMBER} ${DOCKER_IMAGE_TAG}"
+                    } else if (env.BRANCH_NAME == 'dev') {
+                        sh "docker run -d --expose 3001 -p 3001:3000 --name nodedev${env.BUILD_NUMBER} ${DOCKER_IMAGE_TAG}"
+                    }
+                }
+            }
+        }
+    }
+}
