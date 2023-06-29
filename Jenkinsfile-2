@@ -1,21 +1,9 @@
 pipeline {
     agent any
 
-    parameters {
-        choice(
-            choices: ['main', 'dev'],
-            description: 'Specify the target environment',
-            name: 'targetENVIRONMENT'
-        )
-        string(
-            defaultValue: 'latest',
-            description: 'Specify the tag of the Docker image to be deployed',
-            name: 'IMAGE_TAG'
-        )
-    }
     environment {
-        BRANCH_NAME = "${params.targetENVIRONMENT}"
-        DOCKER_IMAGE_TAG = "node${BRANCH_NAME}${params.IMAGE_TAG}"
+        BRANCH_NAME = "${params.BRANCH_NAME}"
+        DOCKER_IMAGE_TAG = "node${params.BRANCH_NAME}${params.IMAGE_TAG}"
     }
     
     stages {
