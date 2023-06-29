@@ -43,7 +43,6 @@ pipeline {
                 // Stop and remove previously running containers
                 script {
                     try {
-                        sh 'docker stop $(docker ps -a --format {{.Names}} --filter "name=node*") || true'
                         sh 'docker rm $(docker ps -a --format {{.Names}} --filter "name=node*") || true'
                     } catch (Exception e) {
                         sh 'echo "no previosly deployed containers"'
