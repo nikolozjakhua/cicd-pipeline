@@ -47,7 +47,8 @@ pipeline {
         stage('Push Docker image') {
             steps {
                 script {
-                withDockerRegistry(credentialsId: 'docker-cred', url:'https://hub.docker.com/repository/docker/nikolozjakhua/cicd') {
+                withCredentials([usernamePassword(credentialsId: 'docker-creds', passwordVariable: 'PASS', usernameVariable: "USER")]) {
+                    sh "echo $PASS | docker login -u $USER --password-stdin"
                     if (env.BRANCH_NAME == 'main') {
                         sh "docker tag ${DOCKER_IMAGE_MAIN} nikolozjakhua/cicd:main.v1"
                         sh "docker push nikolozjakhua/cicd:main.v1"                    
