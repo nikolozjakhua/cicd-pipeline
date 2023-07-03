@@ -1,0 +1,76 @@
+#!/usr/bin/env groovy
+
+@Library('jenkins-test-lib') _
+
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE_MAIN = 'nodemain:v1.0'
+        DOCKER_IMAGE_DEV = 'nodedev:v1.0'
+    }
+    
+    tools {
+        nodejs 'Nodejs'
+    }
+    
+    stages {
+        stage('Build & Test') {
+            steps {
+                // Install dependencies
+                sh 'npm install'
+                // Run tests
+                sh 'npm test'
+            }
+        }
+        
+        stage('Lint Dockerfile'){
+            steps {
+                // lint Dockerfile
+                lint()
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                // Build Docker images
+                script {
+                    if(env.BRANCH_NAME == "main") {
+                        buildImage("$DOCKER_IMAGE_MAIN")
+                    } else if (env.BRANCH_NAME == "dev") {
+                        buildImage("$DOCKER_IMAGE_DEV")
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker image') {
+            steps {
+                // Push Image
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        pushImage("$DOCKER_IMAGE_MAIN", "main")
+                    } else if (env.BRANCH_NAME == 'dev') {
+                        pushImage("$DOCKER_IMAGE_DEV", "dev")
+                    }
+                }
+            }
+        }
+        
+        stage('Cleanup and Deploy') {
+            steps {
+                // Stop and remove previously running containers
+                // Run containers based on branch
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        cleanUp("main")
+                        runContainer("$DOCKER_IMAGE_MAIN", "main", 3000)
+                    } else if (env.BRANCH_NAME == 'dev') {
+                        cleanUp("dev")
+                        runContainer("$DOCKER_IMAGE_DEV", "dev", 3001)
+                    }
+                }
+            }
+        }
+    }
+}
