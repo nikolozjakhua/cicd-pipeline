@@ -15,6 +15,12 @@ pipeline {
             }
         }
 
+        stage('cleanup') {
+            steps {
+                sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=nodedev*") -f'
+            }
+        }
+
         stage('pull docker image') {
             steps {
                 sh "docker pull ${registry}:dev.v1"
