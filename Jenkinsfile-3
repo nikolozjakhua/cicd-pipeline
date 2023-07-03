@@ -15,7 +15,13 @@ pipeline {
             }
         }
 
-        stage('pull docker image') {
+        stage('cleanup') {
+            steps {
+                sh 'docker rm $(docker ps -a --format "{{.Names}}" --filter "name=nodemain*") -f'
+            }
+        }
+
+        stage('pull & push docker image') {
             steps {
                 sh "docker pull ${registry}:main.v1"
                 sh "docker run -d --expose 3000 -p 3000:3000 ${registry}:main.v1"
